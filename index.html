@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Theo dõi quá trình chấp hành án</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+        max-width: 800px;
+        margin: auto;
+        font-size: 17px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .box {
+        background: white;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+    }
+
+    .line {
+        margin: 6px 0;
+    }
+
+    textarea {
+        width: 100%;
+        height: 90px;
+        padding: 10px;
+        font-size: 20px;
+        margin-top: 6px;
+        resize: vertical;
+    }
+
+    b {
+        font-size: 17px;
+    }
+</style>
+</head>
+<body>
+
+<h2>Theo dõi quá trình chấp hành án</h2>
+
+<!-- Thông tin án -->
+<div class="box">
+    <div class="line"><b>Ngày bắt đầu chấp hành:</b> 27/09/2024</div>
+    <div class="line"><b>Thời hạn chấp hành:</b> 21 tháng</div>
+    <div class="line"><b>Thử thách:</b> 42 tháng</div>
+    <div class="line" style="color: red;"><b>Tội danh:</b> Vi phạm quy định về tham gia giao thông đường bộ</div>
+</div>
+
+<!-- Kết quả tính toán -->
+<div class="box" id="result">
+    <div class="line" style="color: red;"><b>Ngày hiện tại:</b> <span id="today"></span></div>
+
+    <hr>
+
+    <div class="line" style="color: #9ACD32;"><b>Đã chấp hành:</b> <span id="passed"></span></div>
+
+    <br>
+
+    <div class="line"><b>Ngày kết thúc 21 tháng:</b> <span id="end21"></span></div>
+    <div class="line" style="color: green;"><b>Còn lại:</b> <span id="remain21"></span></div>
+
+    <br>
+
+    <div class="line"><b>Ngày kết thúc 42 tháng:</b> <span id="end42"></span></div>
+    <div class="line" style="color: green;"><b>Còn lại:</b> <span id="remain42"></span></div>
+</div>
+
+<!-- Nội dung nhận xét -->
+<div class="box">
+    <h3>Nội dung Tự Nhận Xét / Báo Cáo</h3>
+
+    <b>1. Việc chấp hành pháp luật</b>
+    <textarea style="color: blue;">Tôi luôn thực hiện nghiêm túc chấp hành tốt mọi chủ trương, chính sách của Đảng, pháp luật của nhà nước, quy định của địa phương.</textarea>
+
+    <b>2. Việc thực hiện nghĩa vụ công dân</b>
+    <textarea style="color: blue;">Tôi luôn thực hiện tốt các quyền và nghĩa vụ của công dân, nghĩa vụ của người chấp hành án phạt tù cho hưởng án treo tại địa phương.</textarea>
+
+    <b>3. Việc thực hiện nội quy, quy định của địa phương</b>
+    <textarea style="color: blue;">Tôi luôn nghiêm túc thực hiện tốt các nội quy, quy định của địa phương nơi cư trú, có tinh thần cầu thị, tham gia các buổi tuyên truyền pháp luật tại địa phương.</textarea>
+
+    <b>4. Thái độ lao động, học tập</b>
+    <textarea style="color: blue;">Bản thân luôn có thái độ tích cực, hăng hái tham gia các hoạt động lao động, học tập tại địa phương.</textarea>
+
+    <b>5. Việc chấp hành sự quản lý, giám sát của UBND</b>
+    <textarea style="color: blue;">-Bản thân chấp hành nghiêm túc sự quản lý, giám sát, giáo dục của UBND xã đối với người chấp hành án hình sự tại cộng đồng.</textarea>
+    <textarea style="color: blue;">-Án Phí: 200.000đ (đã thực hiện xong).</textarea>
+    
+    <b>6. Thực hiện các hình phạt bổ sung, nghĩa vụ bồi thường thiệt hại</b>
+    <textarea style="color: blue;">Nghĩa vụ bồi thường thiệt hại: 150.000.000đ  (đã thực hi��n xong).</textarea>
+
+    <b>7. Vi phạm nghĩa vụ, vi phạm pháp luật bị xử lý</b>
+    <textarea style="color: blue;">không.</textarea>
+
+    <b>8. Phương hướng phấn đấu</b>
+    <textarea style="color: blue;">tích cực hăng hái nghiêm túc tham gia các hoạt động học tập lao động, chấp hành tốt các nội quy quy định của nhà nước, của địa phương nơi cư trú.</textarea>
+</div>
+
+
+<script>
+// Tính chênh lệch tháng + ngày theo lịch
+function diffMonthsDays(from, to) {
+    let s = new Date(from);
+    let e = new Date(to);
+
+    let months = (e.getFullYear() - s.getFullYear()) * 12 + (e.getMonth() - s.getMonth());
+    let temp = new Date(s.getFullYear(), s.getMonth() + months, s.getDate());
+
+    if (temp > e) {
+        months--;
+        temp = new Date(s.getFullYear(), s.getMonth() + months, s.getDate());
+    }
+
+    let days = Math.floor((e - temp) / (1000 * 60 * 60 * 24));
+    return { months, days };
+}
+
+// Cộng tháng chính xác theo lịch
+function addMonthsCorrect(date, months) {
+    let d = new Date(date);
+    let target = new Date(d.getFullYear(), d.getMonth() + months, d.getDate());
+
+    while (target.getMonth() !== (d.getMonth() + months) % 12) {
+        target.setDate(target.getDate() - 1);
+    }
+    return target;
+}
+
+// Dữ liệu cố định
+const START = new Date(2024, 8, 27); // 27/09/2024
+const MONTHS_21 = 21;
+const MONTHS_42 = 42;
+
+function run() {
+    let now = new Date();
+
+    // Ngày kết thúc
+    let end21 = addMonthsCorrect(START, MONTHS_21);
+    let end42 = addMonthsCorrect(START, MONTHS_42);
+
+    // Đã trải qua
+    let passed = diffMonthsDays(START, now);
+
+    // Còn lại
+    let remain21 = diffMonthsDays(now, end21);
+    let remain42 = diffMonthsDays(now, end42);
+
+    // Xuất dữ liệu
+    document.getElementById("today").innerText = now.toLocaleDateString("vi-VN");
+
+    document.getElementById("end21").innerText = end21.toLocaleDateString("vi-VN");
+    document.getElementById("end42").innerText = end42.toLocaleDateString("vi-VN");
+
+    document.getElementById("passed").innerText =
+        `${passed.months} tháng ${passed.days} ngày`;
+
+    document.getElementById("remain21").innerText =
+        `${remain21.months} tháng ${remain21.days} ngày`;
+
+    document.getElementById("remain42").innerText =
+        `${remain42.months} tháng ${remain42.days} ngày`;
+}
+
+run();
+</script>
+
+
+</body>
+</html>
